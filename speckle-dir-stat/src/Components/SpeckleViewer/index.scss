@@ -1,9 +1,0 @@
-@import '../List/List';
-@import './ViewerControl';
-.SpeckleViewer {
-    height: 100vh;
-    > canvas {
-        height: 100vh !important;
-    }
-
-}
