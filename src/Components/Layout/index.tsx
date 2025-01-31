@@ -1,7 +1,6 @@
 import {observer} from 'mobx-react';
-import {useStores} from '@strategies/stores';
 
-import {Stores} from '../../stores';
+import {Stores, useStores} from '~/stores';
 import DataPanel from '../DataPanel';
 import SelectionPanel from '../SelectionPanel';
 import MenuBar from '../MenuBar';

@@ -1,17 +1,11 @@
 import {
-    AnimatedAxis, // any of these can be non-animated equivalents
     AnimatedGrid,
-    AnimatedLineSeries,
     XYChart,
-    Tooltip, AnnotationCircleSubject, GlyphSeries, AnimatedGlyphSeries, Axis,
+    AnimatedGlyphSeries,
 } from '@visx/xychart';
-import React, {FunctionComponent, useMemo} from "react";
-import {useStores} from "@strategies/stores";
-import {Stores} from "../../stores";
-import TreemapVis from "../TreeMap/TreemapVis";
+import {FunctionComponent, useMemo} from "react";
 import {observer} from "mobx-react";
-import {background, SpaceTreemapProps} from "../TreeMap/SpaceTreemap";
-import {EntityDot, TreeNode} from "../../stores/interfaces";
+import {EntityDot} from "~/stores/interfaces";
 import {scaleLinear} from "@visx/scale";
 import {AxisBottom, AxisLeft} from "@visx/axis";
 

@@ -514,7 +514,7 @@ export default class ObjectLoader {
 }
 
 // Credits and more info: https://github.com/jakearchibald/safari-14-idb-fix
-function safariFix() {
+async function safariFix() {
     const isSafari =
         !navigator.userAgentData &&
         /Safari\//.test(navigator.userAgent) &&

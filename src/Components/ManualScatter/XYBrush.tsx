@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
-import { Rectangle } from "../../stores/UIStore";
-import { useMemo, useRef } from "react";
-import { scaleLinear } from "@visx/scale";
+import { Rectangle } from "~/stores/UIStore";
+import { useMemo } from "react";
 
 type XYBrushProps = {
     svgRef: SVGSVGElement;

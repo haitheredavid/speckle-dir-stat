@@ -1,9 +1,9 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { Store, stores } from "@strategies/stores";
+import { Store } from './Store';
+import { Stores, stores } from "../stores";
 import { EntityDot, TreeNode } from "./interfaces";
 import chroma from "chroma-js"
 import { formatBytes, formatNum } from "../Components/List/List";
-import { Stores } from "../stores";
 
 export class Entity {
     constructor(id: string) {

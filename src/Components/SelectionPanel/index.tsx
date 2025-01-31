@@ -1,9 +1,8 @@
 import { observer} from 'mobx-react';
 import { FiCheck } from 'react-icons/fi';
-import { useStores } from '@strategies/stores';
 import { Panel, Title, Toggle, Body } from '@strategies/ui';
 
-import { Stores } from '../../stores';
+import { Stores, useStores } from '~/stores';
 import { List } from "../List/List";
 
 

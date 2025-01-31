@@ -5,8 +5,6 @@ import LoadModal from './Components/LoadModal';
 
 
 export default function App() {
-
-
     return (
         <div className="App">
             <SpeckleViewer />

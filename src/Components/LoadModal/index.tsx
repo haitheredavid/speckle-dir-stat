@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { observer } from 'mobx-react';
-import { useStores } from '@strategies/stores';
+import { useStores } from '~/stores';
 import { Input } from '@strategies/react-form';
 import { Modal, Body, Buttons, Button } from '@strategies/ui';
 
-import { Stores } from '../../stores';
+import { Stores } from '~/stores';
 // @ts-ignore
-import SasakiLogo from '../../assets/sasaki.svg';
+import SasakiLogo from '~/assets/sasaki.svg';
 
 
 export default observer(function LoadModal() {

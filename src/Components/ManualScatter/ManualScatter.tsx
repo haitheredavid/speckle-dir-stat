@@ -1,9 +1,8 @@
 import { observer } from "mobx-react";
-import { useStores } from "@strategies/stores";
-import { Stores } from "../../stores";
+import { Stores, useStores } from "~/stores";
 import { scaleLinear, scaleLog } from "@visx/scale";
 import { useMemo, useRef } from "react";
-import { EntityDot } from "../../stores/interfaces";
+import { EntityDot } from "~/stores/interfaces";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { XYBrush } from "./XYBrush";
 

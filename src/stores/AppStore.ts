@@ -1,4 +1,4 @@
-import { Store } from '@strategies/stores';
+import { Store } from './Store';
 import { action, makeObservable, observable } from 'mobx';
 import { buildUrl, exchangeAccessCode, goToSpeckleAuthPage, send, speckleLogOut } from '../Components/SpeckleApi';
 import { Entity } from "./Entities";
@@ -100,14 +100,4 @@ export default class AppStore extends Store {
             return send(entities, this.streamId, this.serverUrl, token)
         }
     }
-
-
-    // async sendObject(): Promise<string> {
-    //
-    //     const token: string = this.token === undefined ? '' : this.token;
-    //
-    //     if (this.token !== '')
-    //         return await send(this.streamId, this.serverUrl, token)
-    //
-    // }
 }

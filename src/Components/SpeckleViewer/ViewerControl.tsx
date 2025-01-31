@@ -1,10 +1,9 @@
 import { observer } from "mobx-react";
 import { useEffect, useRef } from "react";
 import { Viewer } from './viewer'
-import { autorun, reaction } from "mobx";
-import Entities, { Entity } from "../../stores/Entities";
-import { useStores, stores } from "@strategies/stores";
-import { Stores } from "../../stores";
+import { reaction } from "mobx";
+import Entities, { Entity } from "~/stores/Entities";
+import { Stores, stores, useStores } from "~/stores";
 
 //making a react component with mobx that can interface with e.g. selections
 

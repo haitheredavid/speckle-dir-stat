@@ -1,4 +1,4 @@
-import { Store } from '@strategies/stores';
+import { Store } from './Store';
 import { action, computed, makeObservable, observable } from 'mobx';
 
 

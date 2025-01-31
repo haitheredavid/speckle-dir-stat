@@ -1,9 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from "mobx-react";
 import TreemapVis from "./TreemapVis";
-import { TreeNode } from "../../stores/interfaces";
-import { useStores } from "@strategies/stores";
-import { Stores } from "../../stores";
+import { TreeNode } from "~/stores/interfaces";
+import { Stores, useStores } from "~/stores";
 
 const palette: { [key: string]: string } = {
     'Objects.Geometry.Mesh': '#e5e356',

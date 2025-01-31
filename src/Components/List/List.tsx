@@ -1,7 +1,6 @@
 import {observer} from "mobx-react";
-import {Entity} from "../../stores/Entities";
-import {useStores} from "@strategies/stores";
-import {Stores} from "../../stores";
+import {Entity} from "~/stores/Entities";
+import {Stores, useStores} from "~/stores";
 import {Button} from "@strategies/ui";
 
 

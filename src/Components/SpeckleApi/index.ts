@@ -1,5 +1,5 @@
 import { Speckle, SpeckleBaseObject, SpeckleObject } from '@strategies/speckle';
-import { Entity } from "../../stores/Entities";
+import { Entity } from "~/stores/Entities";
 
 export const APP_NAME = process.env.REACT_APP_SPECKLE_NAME
 export const TOKEN = `${APP_NAME}.AuthToken`
