@@ -1,9 +1,9 @@
 import {observer} from 'mobx-react';
 
 import {Stores, useStores} from '~/stores';
-import DataPanel from '../DataPanel';
-import SelectionPanel from '../SelectionPanel';
-import MenuBar from '../MenuBar';
+//import DataPanel from '../DataPanel';
+//import SelectionPanel from '../SelectionPanel';
+//import MenuBar from '../MenuBar';
 
 
 export default observer(function Layout() {
@@ -12,11 +12,7 @@ export default observer(function Layout() {
     return (
         <div className={`Layout ${ui.layout}`}>
             <div className="navigation">
-                <MenuBar />
             </div>
-
-            <DataPanel/>
-            <SelectionPanel/>
         </div>
     );
 });

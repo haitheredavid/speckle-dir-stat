@@ -1,3 +1,4 @@
+/*
 import { observer} from 'mobx-react';
 import { FiCheck } from 'react-icons/fi';
 import { Panel, Title, Toggle, Body } from '@strategies/ui';
@@ -23,3 +24,4 @@ export default observer(function SelectionPanel() {
         </Panel>
     );
 });
+ */

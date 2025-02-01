@@ -1,3 +1,4 @@
+/*
 import {observer} from 'mobx-react';
 import {FiSettings} from 'react-icons/fi';
 import {TopRibbon, Title, Logo, Drawer, IconButton} from '@strategies/ui';
@@ -22,3 +23,4 @@ export default observer(function MenuBar() {
         </TopRibbon>
     );
 });
+ */

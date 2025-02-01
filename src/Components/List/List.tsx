@@ -1,7 +1,7 @@
 import {observer} from "mobx-react";
 import {Entity} from "~/stores/Entities";
 import {Stores, useStores} from "~/stores";
-import {Button} from "@strategies/ui";
+import { Button } from 'primereact/button';
 
 
 type ListItemProps = {

@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -21,12 +21,15 @@
       "dom.iterable",
       "esnext"
     ],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
         "~/*": ["./src/*"]
     }
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "src/Components/SpeckleViewer/viewer/*"
   ]
 }

@@ -1,3 +1,4 @@
+/*
 import {observer} from 'mobx-react';
 import {FiGrid} from 'react-icons/fi';
 import {Panel, Title, Toggle, Body} from '@strategies/ui';
@@ -25,3 +26,4 @@ export default observer(function DataPanel() {
         </Panel>
     );
 });
+ */
