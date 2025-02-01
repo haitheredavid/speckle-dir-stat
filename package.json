@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@speckle/objectloader": "^2.15.1",
+    "@speckle/objectloader": "^2.23.5",
     "@strategies/speckle": "^3.0.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",

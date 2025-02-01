@@ -1,4 +1,3 @@
-import { log } from 'console';
 import ObjectLoader from '../../objectloader';
 import Converter from './converter/Converter';
 
@@ -21,15 +20,18 @@ export default class ViewerObjectLoader {
 			}
 
 			// example url: `https://staging.speckle.dev/streams/a75ab4f10f/objects/f33645dc9a702de8af0af16bd5f655b0`
-			console.log(objectUrl);
+			// new api path example : `https://app.speckle.systems/projects/cc54523741/models/c38e93301c8d329960c20f6e9e6285fb`
+			this.objectUrl = `https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b`;
 
-			const url = new URL(objectUrl);
+			console.log(`url: ${this.objectUrl}`);
+
+			const url = new URL(this.objectUrl);
 
 			const segments = url.pathname.split('/');
 			if (
 				segments.length < 5 ||
-				url.pathname.indexOf('streams') === -1 ||
-				url.pathname.indexOf('objects') === -1
+				url.pathname.indexOf('projects') === -1 ||
+				url.pathname.indexOf('models') === -1
 			) {
 				throw new Error('Unexpected object url format.');
 			}
@@ -37,6 +39,9 @@ export default class ViewerObjectLoader {
 			this.serverUrl = url.origin;
 			this.streamId = segments[2];
 			this.objectId = segments[4];
+			console.log(
+				`API: Object Ready! server: ${this.serverUrl}, project: ${this.streamId}, object: ${objectUrl}`
+			);
 
 			this.loader = new ObjectLoader({
 				serverUrl: this.serverUrl,
@@ -49,7 +54,8 @@ export default class ViewerObjectLoader {
 			this.converter = new Converter(this.loader);
 		} catch (error) {
 			// Accessing localStorage may throw when executing on sandboxed document, ignore.
-			console.throw(error);
+			console.log(error);
+			throw error;
 		} finally {
 			this.lastAsyncPause = Date.now();
 			this.existingAsyncPause = null;

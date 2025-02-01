@@ -3,47 +3,52 @@
  */
 
 import SpeckleApp from './Speckle';
-import SpeckleCommit from './Commit';
-import SpeckleStream from './Stream';
+import SpeckleModel from './Model';
+import SpeckleProject from './Project';
 import SpeckleObject from './Object';
 
+type Nodes =
+	| SpeckleNode<Nodes>
+	| SpeckleApp
+	| SpeckleProject
+	| SpeckleObject
+	| SpeckleModel;
 
-type Nodes = SpeckleNode<Nodes> | SpeckleApp | SpeckleStream | SpeckleObject | SpeckleCommit;
+export default abstract class SpeckleNode<
+	Parent extends Nodes,
+	ReturnType extends object = object
+> {
+	public readonly id: string;
+	public readonly parent: Parent;
+	protected payload: ReturnType = {} as ReturnType;
+	private _hasBeenFetched: boolean = false;
 
-export default abstract class SpeckleNode<Parent extends Nodes, ReturnType extends object = object> {
+	constructor(id: string, parent: Parent) {
+		this.id = id;
+		this.parent = parent;
+	}
 
-    public readonly id: string;
-    public readonly parent: Parent;
-    protected payload: ReturnType = {} as ReturnType;
-    private _hasBeenFetched: boolean = false;
+	public abstract get url(): string;
 
-    constructor(id: string, parent: Parent) {
-        this.id = id;
-        this.parent = parent;
-    }
+	protected abstract fetch(): Promise<ReturnType>;
 
-    public abstract get url(): string;
+	public get get(): Promise<ReturnType> {
+		return (async () => {
+			if (!this.hasBeenFetched) {
+				this.payload = await this.fetch();
+				this._hasBeenFetched = true;
+			}
 
-    protected abstract fetch(): Promise<ReturnType>;
+			return this.payload;
+		})();
+	}
 
-    public get get(): Promise<ReturnType> {
-        return (async () => {
-            if (!this.hasBeenFetched) {
-                this.payload = await this.fetch();
-                this._hasBeenFetched = true;
-            }
+	public get hasBeenFetched(): boolean {
+		return this._hasBeenFetched;
+	}
 
-            return this.payload;
-        })();
-    }
-
-    public get hasBeenFetched(): boolean {
-        return this._hasBeenFetched;
-    }
-
-    public async refresh(): Promise<ReturnType> {
-        this._hasBeenFetched = false;
-        return this.payload;
-    }
-
+	public async refresh(): Promise<ReturnType> {
+		this._hasBeenFetched = false;
+		return this.payload;
+	}
 }

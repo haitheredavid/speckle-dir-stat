@@ -11,23 +11,24 @@ export const REFRESH_TOKEN = `${APP_NAME}.RefreshToken`;
 export const CHALLENGE = `${APP_NAME}.Challenge`;
 
 export const buildUrl = async (
-	streamId: string,
-	commitId: string,
+	projectId: string,
+	modelId: string,
 	server: string,
 	token?: string
 ): Promise<string> => {
 	const api = new Speckle({ server, token });
 
-	const data = await api.Stream(streamId).Commit(commitId).get;
+	console.log('api looks likeee', api);
+	// const data = await api.Project(projectId).Commit(commitId).get;
 
 	// The way we use to call to the speckle api has changed so we will need to fix that
-	return 'https://app.speckle.systems/projects/cc54523741/models/c38e93301c8d329960c20f6e9e6285fb';
-	// return `${server}/streams/${streamId}/objects/${data.referencedObject}`;
+	return 'https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b';
+	// return `${server}/projects/${projectId}/objects/${data.referencedObject}`;
 };
 
 export const send = async (
 	data: Entity[],
-	streamId: string,
+	projectId: string,
 	server: string,
 	token: string
 ): Promise<string> => {
@@ -52,8 +53,8 @@ export const send = async (
 	console.log(obj);
 
 	const res = (await api
-		.Stream(streamId)
-		.writeAndCommitObject(obj, 'From SpeckleDirStat', 'main')) as SpeckleObject;
+		.Project(projectId)
+		.writeObject(obj, 'From SpeckleDirStat', 'main')) as SpeckleObject;
 
 	console.log(res);
 

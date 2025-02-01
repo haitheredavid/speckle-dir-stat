@@ -232,7 +232,7 @@ export default class Viewer extends EventEmitter {
 			this.loaders[url] = loader;
 			await loader.load();
 		} catch (e) {
-			console.throw(e);
+			console.log(e);
 		} finally {
 			if (--this.inProgressOperations === 0) this.emit('busy', false);
 		}

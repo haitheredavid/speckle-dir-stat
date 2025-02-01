@@ -6,66 +6,62 @@ import ObjectLoader from '@speckle/objectloader';
 
 import API from './api';
 import SpeckleNode from './Node';
-import SpeckleStream from './Stream';
+import SpeckleProject from './Project';
 import { SpeckleBaseObject } from './types';
-import md5 from "md5";
+import md5 from 'md5';
 
+export default class SpeckleObject extends SpeckleNode<SpeckleProject> {
+	protected readonly loader: any;
 
-export default class SpeckleObject extends SpeckleNode<SpeckleStream> {
+	constructor(id: string | undefined, project: SpeckleProject) {
+		if (id === undefined) id = md5(new Date().toString());
 
-    protected readonly loader: any;
+		super(id, project);
+		const streamId = project.id;
 
-    constructor(id: string | undefined, stream: SpeckleStream) {
-        if (id === undefined)
-            id = md5((new Date()).toString());
+		console.log('project id:', project.id);
+		this.loader = new ObjectLoader({
+			serverUrl: project.app.server,
+			token: project.app.token,
+			projectId: streamId,
+			objectId: id,
+		});
+	}
 
-        super(id, stream);
+	public get url(): string {
+		return `${this.project.url}/objects/${this.id}`;
+	}
 
-        this.loader = new ObjectLoader({
-            serverUrl: stream.app.server,
-            token: stream.app.token,
-            streamId: stream.id,
-            objectId: id,
-        });
-    }
+	public get project(): SpeckleProject {
+		return this.parent;
+	}
 
-    public get url(): string  {
-        return `${this.stream.url}/objects/${this.id}`;
-    }
-
-    public get stream(): SpeckleStream {
-        return this.parent;
-    }
-
-
-    public async write(obj: SpeckleBaseObject): Promise<SpeckleObject> {
-        await API.query(
-            this.stream.app.server,
-            this.stream.app.token,
-            `mutation objectCreate ($object: ObjectCreateInput!) {
+	public async write(obj: SpeckleBaseObject): Promise<SpeckleObject> {
+		await API.query(
+			this.project.app.server,
+			this.project.app.token,
+			`mutation objectCreate ($object: ObjectCreateInput!) {
                 objectCreate(objectInput: $object)
             }`,
-            {
-                object: {
-                    streamId: this.stream.id,
-                    objects: [obj],
-                },
-            }
-        );
+			{
+				object: {
+					projectId: this.project.id,
+					objects: [obj],
+				},
+			}
+		);
 
-        this.payload = obj;
-        //this._hasBeenFetched = true;
+		this.payload = obj;
+		//this._hasBeenFetched = true;
 
-        return this;
-    }
+		return this;
+	}
 
-    public iterator() {
-        return this.loader.getObjectIterator();
-    }
+	public iterator() {
+		return this.loader.getObjectIterator();
+	}
 
-    protected async fetch(): Promise<object> {
-        return this.loader.getAndConstructObject();
-    }
-
-
+	protected async fetch(): Promise<object> {
+		return this.loader.getAndConstructObject();
+	}
 }
