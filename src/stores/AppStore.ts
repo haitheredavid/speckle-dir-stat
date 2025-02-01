@@ -1,103 +1,110 @@
 import { Store } from './Store';
 import { action, makeObservable, observable } from 'mobx';
-import { buildUrl, exchangeAccessCode, goToSpeckleAuthPage, send, speckleLogOut } from '../Components/SpeckleApi';
-import { Entity } from "./Entities";
-
+import {
+	buildUrl,
+	exchangeAccessCode,
+	goToSpeckleAuthPage,
+	send,
+	speckleLogOut,
+} from '../Components/SpeckleApi';
+import { Entity } from './Entities';
 
 export default class AppStore extends Store {
+	constructor() {
+		super();
+		makeObservable(this);
+	}
 
-    constructor() {
-        super();
-        makeObservable(this);
-    }
+	@observable
+	clean: boolean = true;
 
-    @observable
-    clean: boolean = true;
+	@action
+	makeUnclean() {
+		this.clean = false;
+	}
 
-    @action
-    makeUnclean() {
-        this.clean = false;
-    }
+	@observable
+	url: string = '';
 
-    @observable
-    url: string = '';
+	@action
+	setUrl(url: string) {
+		this.url = url;
+	}
 
-    @action
-    setUrl(url: string) {
-        this.url = url;
-    }
+	@observable
+	token?: string;
 
-    @observable
-    token?: string;
+	@action
+	setToken(token: string) {
+		this.token = token;
+	}
 
-    @action
-    setToken(token: string) {
-        this.token = token;
-    }
+	@action
+	logout() {
+		speckleLogOut();
+	}
 
+	@action
+	exchangeAccessCode(accessCode: string) {
+		return exchangeAccessCode(accessCode, this.serverUrl);
+	}
 
-    @action
-    logout() {
-        speckleLogOut();
-    }
+	@action
+	redirectToAuth() {
+		goToSpeckleAuthPage(this.serverUrl);
+	}
 
-    @action
-    exchangeAccessCode(accessCode: string) {
-        return exchangeAccessCode(accessCode, this.serverUrl);
-    }
+	@observable
+	serverUrl: string = '';
 
-    @action
-    redirectToAuth() {
-        goToSpeckleAuthPage(this.serverUrl);
-    }
+	@action
+	setServerUrl(serverUrl: string) {
+		this.serverUrl = serverUrl;
+	}
 
+	@observable
+	streamId: string = '';
 
-    @observable
-    serverUrl: string = '';
+	@action
+	setStreamId(streamId: string) {
+		this.streamId = streamId;
+	}
 
-    @action
-    setServerUrl(serverUrl: string) {
-        this.serverUrl = serverUrl;
-    }
+	@observable
+	commitId: string = '';
 
-    @observable
-    streamId: string = '';
+	@action
+	setCommitId(commitId: string) {
+		this.commitId = commitId;
+	}
 
-    @action
-    setStreamId(streamId: string) {
-        this.streamId = streamId;
-    }
+	async getObjectUrl(): Promise<string> {
+		if (this.url !== '') {
+			const url = new URL(this.url);
 
-    @observable
-    commitId: string = '';
+			const splitUrl = url.pathname.split('/');
 
-    @action
-    setCommitId(commitId: string) {
-        this.commitId = commitId;
-    }
+			this.setStreamId(splitUrl[2]);
+			this.setCommitId(splitUrl[4]);
+			this.setServerUrl(url.origin);
 
-    async getObjectUrl(): Promise<string> {
-        if (this.url !== '') {
-            const url = new URL(this.url);
+			return await buildUrl(
+				this.streamId,
+				this.commitId,
+				this.serverUrl,
+				this.token
+			);
+		}
 
-            const splitUrl = url.pathname.split('/');
+		return '';
+	}
 
-            this.setStreamId(splitUrl[2]);
-            this.setCommitId(splitUrl[4]);
-            this.setServerUrl(url.origin);
+	@action
+	sendSelected(entities: Entity[]) {
+		const token: string = this.token === undefined ? '' : this.token;
 
-            return await buildUrl(this.streamId, this.commitId, this.serverUrl, this.token);
-        }
-
-        return '';
-    }
-
-    @action
-    sendSelected(entities: Entity[]) {
-        const token: string = this.token === undefined ? '' : this.token;
-
-        if (this.token !== '' || entities?.length === 0) {
-            return send(entities, this.streamId, this.serverUrl, token)
-        }
-    }
+		if (this.token !== '' || entities?.length === 0) {
+			return send(entities, this.streamId, this.serverUrl, token);
+		}
+	}
 }
