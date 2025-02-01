@@ -1,8 +1,8 @@
 import { observer } from "mobx-react";
-import { Stores, useStores } from "~/stores";
+import { Stores, useStores } from "../../stores";
 import { scaleLog } from "@visx/scale";
 import { useMemo, useRef } from "react";
-import { EntityDot } from "~/stores/interfaces";
+import { EntityDot } from "../../stores/interfaces";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { XYBrush } from "./XYBrush";
 
@@ -46,8 +46,8 @@ export const ManualScatter = observer(({ width, height }: ManualScatterProps) =>
     const paddingLeft = 50;
     const padding = 10;
     let bottom = height - 20 - padding * 2;
-    const xRange = [paddingLeft, width - padding - paddingLeft];
-    const yRange = [bottom, padding];
+    const xRange = useMemo(() => [paddingLeft, width - padding - paddingLeft], [paddingLeft, width, padding]);
+    const yRange = useMemo(() => [bottom, padding], [bottom, padding]);
     const xScale = useMemo(
         () =>
             scaleLog<number>({
@@ -55,7 +55,7 @@ export const ManualScatter = observer(({ width, height }: ManualScatterProps) =>
                 round: true,
                 domain: [xMin, xMax * 1.05],
             }),
-        [xMin, xMax],
+        [xRange, xMin, xMax],
     );
     const yScale = useMemo(
         () =>
@@ -64,7 +64,7 @@ export const ManualScatter = observer(({ width, height }: ManualScatterProps) =>
                 round: true,
                 domain: [yMin, yMax * 1.1],
             }),
-        [yMin, yMax],
+        [yMin, yMax, yRange],
     );
 
     return <div className={'ManualScatter'}>

@@ -1,29 +1,19 @@
-/*
 import {observer} from 'mobx-react';
-import {FiGrid} from 'react-icons/fi';
-import {Panel, Title, Toggle, Body} from '@strategies/ui';
+//import {FiGrid} from 'react-icons/fi';
+import { Panel } from 'primereact/panel';
 
-import {Stores, useStores} from '~/stores';
+import { useStores } from '../../stores';
 import SpaceTreemap from "../TreeMap/SpaceTreemap";
 import { ManualScatter } from "../ManualScatter/ManualScatter";
 
 export default observer(function DataPanel() {
-    const {ui, entities} = useStores() as Stores;
+    const { entities } = useStores();
 
     return (
-        <Panel
-            className="DataPanel"
-            active={ui.dataPanelIsOpen}
-            onToggle={() => ui.setDataPanelOpen(!ui.dataPanelIsOpen)}
-        >
-            <Title>Model Data</Title>
-            <Toggle><FiGrid/></Toggle>
-            <Body>
-                <ManualScatter width={800} height={400}/>
-                <SpaceTreemap width={800} height={400}
-                              treeTotals={entities.activeTreeMap}/>
-            </Body>
+        <Panel className="DataPanel" header="Model Data">
+            <ManualScatter width={800} height={400}/>
+            <SpaceTreemap width={800} height={400}
+                          treeTotals={entities.activeTreeMap} />
         </Panel>
     );
 });
- */

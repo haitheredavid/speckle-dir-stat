@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { Rectangle } from "~/stores/UIStore";
+import { Rectangle } from "../../stores/UIStore";
 import { useMemo } from "react";
 
 type XYBrushProps = {
@@ -29,7 +29,7 @@ class DragHelper {
         this.startPosition = this.transformPoint(e);
     }
 
-    mouseUp = (e: MouseEvent) => {
+    mouseUp = () => {
         window.removeEventListener("mouseup", this.mouseUp);
         window.removeEventListener("mousemove", this.mouseMove);
 
@@ -54,7 +54,7 @@ class DragHelper {
 export const XYBrush = observer(({ svgRef, rectangle, xScale, yScale, xRange, yRange, onBrush }: XYBrushProps) => {
     const dragHelper = useMemo(
         () => new DragHelper(),
-        [rectangle],
+        [],
     );
 
     const selectionBox = {
@@ -63,8 +63,6 @@ export const XYBrush = observer(({ svgRef, rectangle, xScale, yScale, xRange, yR
         width: xScale(rectangle.right) - xScale(rectangle.left),
         height: yScale(rectangle.bottom) - yScale(rectangle.top),
     }
-    console.log(rectangle, selectionBox);
-
 
     const convertPosition = (x: number, y: number) => {
         return {
@@ -76,7 +74,6 @@ export const XYBrush = observer(({ svgRef, rectangle, xScale, yScale, xRange, yR
     dragHelper.onDrag = (startPosition, position) => {
         const startPos = convertPosition(startPosition.x, startPosition.y);
         const pos = convertPosition(position.x, position.y);
-        console.log(startPos, pos);
         rectangle.set(startPos.x, startPos.y, pos.x, pos.y);
     };
 

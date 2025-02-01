@@ -27,7 +27,7 @@
     }
   },
   "include": [
-    "src"
+    "**/*.tsx"
   ],
   "exclude": [
     "src/Components/SpeckleViewer/viewer/*"
