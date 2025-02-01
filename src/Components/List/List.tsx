@@ -1,6 +1,6 @@
 import {observer} from "mobx-react";
 import {Entity} from "~/stores/Entities";
-import {Stores, useStores} from "~/stores";
+import {Stores, useStores} from "../../stores";
 import { Button } from 'primereact/button';
 
 
@@ -19,7 +19,7 @@ export const formatNum = (val: number) => {
 };
 
 export const ListItem = observer(({item}: ListItemProps) => {
-    const [a, b, objectTypeDisplay] = item.objectType.split('.');
+    const objectTypeDisplay = item.objectType.split('.')[2];
     const {app, ui} = useStores() as Stores;
 
     const href = `https://speckle.xyz/streams/${app.streamId}/objects/${item.id}`;
@@ -28,7 +28,7 @@ export const ListItem = observer(({item}: ListItemProps) => {
     }}>
         <div className={'smaller'}>
             <div className={'label'}>Id</div>
-            <div className={'value'}><a href={href} target={'_blank'}>{item.id}</a></div>
+            <div className={'value'}><a href={href} target={'_blank'} rel="noreferrer">{item.id}</a></div>
         </div>
         <div className={'left'}>
             <div>
@@ -64,9 +64,7 @@ export const ListItem = observer(({item}: ListItemProps) => {
     </div>
 });
 
-type ListProps = {};
-
-export const List = observer(({}: ListProps) => {
+export const List = observer(() => {
     const {entities, ui, app} = useStores() as Stores;
 
     return <div className={'List'}>

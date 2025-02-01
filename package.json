@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@speckle/objectloader": "^2.15.1",
     "@strategies/speckle": "^3.0.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -37,6 +38,7 @@
     "d3": "^7.4.4",
     "hold-event": "^0.1.0",
     "lodash.debounce": "^4.0.8",
+    "md5": "^2.3.0",
     "mobx": "^6.5.0",
     "mobx-react": "^7.4.0",
     "primeicons": "^7.0.0",
@@ -78,6 +80,7 @@
   },
   "devDependencies": {
     "@tweakpane/core": "^1.0.9",
+    "@types/md5": "^2.3.5",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
     "eslint": "^8.11.0",

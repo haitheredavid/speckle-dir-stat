@@ -1,9 +1,9 @@
 import { createContext, useContext } from 'react';
 
-import { Store } from '~/stores/Store';
-import UIStore from '~/stores/UIStore';
-import Entities from '~/stores/Entities';
-import AppStore from '~/stores/AppStore';
+import { Store } from './Store';
+import UIStore from './UIStore';
+import Entities from './Entities';
+import AppStore from './AppStore';
 
 export type Stores = {[key: string]: Store} & {
     app: AppStore;

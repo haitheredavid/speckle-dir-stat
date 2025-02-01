@@ -2,8 +2,8 @@ import { observer } from "mobx-react";
 import { useEffect, useRef } from "react";
 import { Viewer } from './viewer'
 import { reaction } from "mobx";
-import Entities, { Entity } from "~/stores/Entities";
-import { Stores, stores, useStores } from "~/stores";
+import Entities, { Entity } from "../../stores/Entities";
+import { Stores, stores, useStores } from "../../stores";
 
 //making a react component with mobx that can interface with e.g. selections
 
@@ -123,17 +123,15 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 
 let runOnce = false;
 
-type ViewerProps = {
-};
-
-export const ViewerControl = observer(({ }: ViewerProps) => {
+export const ViewerControl = observer(() => {
 
     // @ts-ignore
-    const { app, entities, ui } = useStores() as Stores;
+    const { app, entities } = useStores() as Stores;
 
     const viewer = useRef<Viewer | null>(null);
-    let divRef: HTMLDivElement | null;
+    let divRef: HTMLDivElement | null = null;
     console.log('ViewerControl render');
+
     useEffect(() => {
         if (divRef && !app.clean) {
             if (runOnce) return;//SHOULD NOT BE NEEDED when passing empty array as deps, but something is up...
@@ -147,7 +145,7 @@ export const ViewerControl = observer(({ }: ViewerProps) => {
             loadEntities(viewer.current, entities);
         }
 
-    }, [entities, app.clean]);
+    }, [entities, app.clean, divRef]);
 
     return <div ref={node => {
         divRef = node;

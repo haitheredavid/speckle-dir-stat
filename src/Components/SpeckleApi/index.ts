@@ -1,4 +1,4 @@
-import { Speckle, SpeckleBaseObject, SpeckleObject } from '@strategies/speckle';
+import { Speckle, SpeckleBaseObject, SpeckleObject } from '../../vendor/speckle/src';
 import { Entity } from "~/stores/Entities";
 
 export const APP_NAME = process.env.REACT_APP_SPECKLE_NAME
