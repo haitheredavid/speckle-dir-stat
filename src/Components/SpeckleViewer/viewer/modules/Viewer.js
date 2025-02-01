@@ -9,7 +9,6 @@ import InteractionHandler from './InteractionHandler';
 import CameraHandler from './context/CameraHanlder';
 
 import SectionBox from './SectionBox';
-import { log } from 'console';
 
 export default class Viewer extends EventEmitter {
 	constructor({
