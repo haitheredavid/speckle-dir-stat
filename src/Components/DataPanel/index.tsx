@@ -1,5 +1,4 @@
 import {observer} from 'mobx-react';
-//import {FiGrid} from 'react-icons/fi';
 import { Panel } from 'primereact/panel';
 
 import { useStores } from '../../stores';
@@ -11,9 +10,11 @@ export default observer(function DataPanel() {
 
     return (
         <Panel className="DataPanel" header="Model Data">
+            {/*}
             <ManualScatter width={800} height={400}/>
             <SpaceTreemap width={800} height={400}
                           treeTotals={entities.activeTreeMap} />
+              */}
         </Panel>
     );
 });
