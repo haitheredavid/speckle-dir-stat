@@ -3,6 +3,7 @@
  */
 
 import API from './api';
+import SpeckleModel from './Model';
 import SpeckleNode from './Node';
 import SpeckleObject from './Object';
 import SpeckleApp from './Speckle';
@@ -26,10 +27,10 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 		return new SpeckleVersion(id, this);
 	}
 
-	public async Version(
+	public async createVersion(
 		obj: SpeckleObject,
 		message: string = 'data from @zfs/speckle',
-		VersionName: string = 'main'
+		model: SpeckleModel
 	) {
 		return API.query(
 			this.parent.server,
@@ -42,7 +43,7 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 					projectId: this.id,
 					objectId: obj.id,
 					sourceApplication: `@zfs/speckle`,
-					VersionName,
+					model,
 					message,
 				},
 			}
