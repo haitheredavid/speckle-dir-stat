@@ -15,6 +15,7 @@ export type VersionData = {
 	createdAt: string;
 	name: string;
 	sourceApplication: string;
+	previewUrl: string;
 };
 
 export default class SpeckleVersion extends SpeckleNode<
@@ -32,7 +33,7 @@ export default class SpeckleVersion extends SpeckleNode<
 	 */
 
 	public get url(): string {
-		return `${this.model.url}/models/${this.model.id}@${this.id}`;
+		return `${this.project.url}/models/${this.model.id}@${this.id}`;
 	}
 
 	public get model(): SpeckleModel {
@@ -43,7 +44,13 @@ export default class SpeckleVersion extends SpeckleNode<
 		return this.parent.project;
 	}
 
+	public async getFullUrl(): Promise<string> {
+		const data = await this.fetch();
+		return `${this.project.url}/models/${data.referencedObject}`;
+	}
+
 	protected async fetch() {
+		console.log(`Fetching Version at ${this.url}`);
 		const res = await API.query(
 			this.project.app.server,
 			this.project.app.token,
@@ -63,6 +70,6 @@ export default class SpeckleVersion extends SpeckleNode<
 			}
 		);
 		console.log(res);
-		return { ...res.data.project.version, id: this.id };
+		if (res) return { ...res.data.project.version, id: this.id };
 	}
 }

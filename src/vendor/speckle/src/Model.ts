@@ -1,6 +1,7 @@
 import API from './api';
 import SpeckleNode from './Node';
 import SpeckleProjct from './Project';
+import SpeckleVersion from './Version';
 
 export type ModelData = {
 	id: string;
@@ -16,6 +17,13 @@ export default class SpeckleModel extends SpeckleNode<
 > {
 	public get url(): string {
 		return `${this.project.url}/models/${this.id}`;
+	}
+
+	public get project(): SpeckleProjct {
+		return this.parent;
+	}
+	public Version(id: string): SpeckleVersion {
+		return new SpeckleVersion(id, this);
 	}
 
 	protected async fetch(): Promise<ModelData> {
@@ -40,8 +48,5 @@ export default class SpeckleModel extends SpeckleNode<
 		);
 		console.log(res);
 		return { ...res.data.project.model, id: this.id };
-	}
-	public get project(): SpeckleProjct {
-		return this.parent;
 	}
 }

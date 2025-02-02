@@ -7,7 +7,6 @@ import SpeckleModel from './Model';
 import SpeckleNode from './Node';
 import SpeckleObject from './Object';
 import SpeckleApp from './Speckle';
-import SpeckleVersion from './Version';
 import { SpeckleBaseObject } from './types';
 
 export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
@@ -23,10 +22,9 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 		return new SpeckleObject(id, this);
 	}
 
-	public Version(id: string): SpeckleVersion {
-		return new SpeckleVersion(id, this);
+	public Model(id: string): SpeckleModel {
+		return new SpeckleModel(id, this);
 	}
-
 	public async createVersion(
 		obj: SpeckleObject,
 		message: string = 'data from @zfs/speckle',
@@ -57,7 +55,7 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 	): Promise<SpeckleObject> {
 		const newObject = this.Object(obj.id);
 
-		await this.Version(await newObject.write(obj), message, VersionName);
+		//	await this.Version(await newObject.write(obj), message, VersionName);
 
 		return newObject;
 	}
