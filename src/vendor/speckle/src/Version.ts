@@ -1,12 +1,12 @@
 /**
- * Model
+ * Version
  */
 
 import API from './api';
 import SpeckleNode from './Node';
 import SpeckleProjct from './Project';
 
-export type ModelData = {
+export type VersionData = {
 	id: string;
 	message: string;
 	referencedObject: string;
@@ -16,9 +16,9 @@ export type ModelData = {
 	sourceApplication: string;
 };
 
-export default class SpeckleModel extends SpeckleNode<
+export default class SpeckleVersion extends SpeckleNode<
 	SpeckleProjct,
-	ModelData
+	VersionData
 > {
 	public get url(): string {
 		return `${this.project.url}/projects/${this.id}`;
@@ -32,14 +32,12 @@ export default class SpeckleModel extends SpeckleNode<
 		const res = await API.query(
 			this.project.app.server,
 			this.project.app.token,
-			`query ProjctModelQuery($projectId: String!, $id: String!) {
+			`query ProjctVersionQuery($projectId: String!, $id: String!) {
                 project(id: $projectId) {
-                    model(id: $id) {
+                    version(id: $id) {
                         message
                         referencedObject
-                        authorId
                         createdAt
-                        branchName
                         sourceApplication
                     }
                 }
@@ -49,7 +47,7 @@ export default class SpeckleModel extends SpeckleNode<
 				projectId: this.project.id,
 			}
 		);
-
-		return { ...res.data.project.project, id: this.id };
+		console.log(res);
+		return { ...res.data.project.version, id: this.id };
 	}
 }

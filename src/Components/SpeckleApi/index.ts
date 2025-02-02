@@ -18,12 +18,11 @@ export const buildUrl = async (
 ): Promise<string> => {
 	const api = new Speckle({ server, token });
 
-	console.log('api looks likeee', api);
-	// const data = await api.Project(projectId).Commit(commitId).get;
+	const data = await api.Project(projectId).Model(modelId).get;
 
 	// The way we use to call to the speckle api has changed so we will need to fix that
-	return 'https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b';
-	// return `${server}/projects/${projectId}/objects/${data.referencedObject}`;
+	// return 'https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b';
+	return `${server}/projects/${projectId}/models/${data.referencedObject}`;
 };
 
 export const send = async (

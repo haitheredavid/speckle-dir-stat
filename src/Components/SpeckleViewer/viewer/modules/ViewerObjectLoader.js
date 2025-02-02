@@ -15,18 +15,14 @@ export default class ViewerObjectLoader {
 
 			if (!this.token) {
 				console.warn(
-					'Viewer: no auth token present. Requests to non-public stream objects will fail.'
+					'Viewer: no auth token present. Requests to non-public project objects will fail.'
 				);
 			}
 
-			// example url: `https://staging.speckle.dev/streams/a75ab4f10f/objects/f33645dc9a702de8af0af16bd5f655b0`
-			// new api path example : `https://app.speckle.systems/projects/cc54523741/models/c38e93301c8d329960c20f6e9e6285fb`
-			this.objectUrl = `https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b`;
-
 			console.log(`url: ${this.objectUrl}`);
-
 			const url = new URL(this.objectUrl);
 
+			// TODO should make this a bit more dynamic incase the api path changes again
 			const segments = url.pathname.split('/');
 			if (
 				segments.length < 5 ||
@@ -37,16 +33,17 @@ export default class ViewerObjectLoader {
 			}
 
 			this.serverUrl = url.origin;
-			this.streamId = segments[2];
+			this.projectId = segments[2];
 			this.objectId = segments[4];
+
 			console.log(
-				`API: Object Ready! server: ${this.serverUrl}, project: ${this.streamId}, object: ${objectUrl}`
+				`API: Object Ready! server: ${this.serverUrl}, project: ${this.projectId}, object: ${objectUrl}`
 			);
 
 			this.loader = new ObjectLoader({
 				serverUrl: this.serverUrl,
 				token: this.token,
-				streamId: this.streamId,
+				projectId: this.projectId,
 				objectId: this.objectId,
 				options: { enableCaching },
 			});

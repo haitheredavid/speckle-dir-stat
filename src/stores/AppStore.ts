@@ -13,6 +13,9 @@ export default class AppStore extends Store {
 	constructor() {
 		super();
 		makeObservable(this);
+		this.setUrl(
+			'https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b'
+		);
 	}
 
 	@observable
@@ -63,19 +66,19 @@ export default class AppStore extends Store {
 	}
 
 	@observable
-	streamId: string = '';
+	projectId: string = '';
 
 	@action
-	setStreamId(streamId: string) {
-		this.streamId = streamId;
+	setprojectId(projectId: string) {
+		this.projectId = projectId;
 	}
 
 	@observable
-	commitId: string = '';
+	modelId: string = '';
 
 	@action
-	setCommitId(commitId: string) {
-		this.commitId = commitId;
+	setmodelId(modelId: string) {
+		this.modelId = modelId;
 	}
 
 	async getObjectUrl(): Promise<string> {
@@ -84,13 +87,13 @@ export default class AppStore extends Store {
 
 			const splitUrl = url.pathname.split('/');
 
-			this.setStreamId(splitUrl[2]);
-			this.setCommitId(splitUrl[4]);
+			this.setprojectId(splitUrl[2]);
+			this.setmodelId(splitUrl[4]);
 			this.setServerUrl(url.origin);
 
 			return await buildUrl(
-				this.streamId,
-				this.commitId,
+				this.projectId,
+				this.modelId,
 				this.serverUrl,
 				this.token
 			);
@@ -104,7 +107,7 @@ export default class AppStore extends Store {
 		const token: string = this.token === undefined ? '' : this.token;
 
 		if (this.token !== '' || entities?.length === 0) {
-			return send(entities, this.streamId, this.serverUrl, token);
+			return send(entities, this.projectId, this.serverUrl, token);
 		}
 	}
 }

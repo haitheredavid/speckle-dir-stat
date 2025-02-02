@@ -3,7 +3,7 @@
  */
 
 import SpeckleApp from './Speckle';
-import SpeckleModel from './Model';
+import SpeckleModel from './Version';
 import SpeckleProject from './Project';
 import SpeckleObject from './Object';
 
