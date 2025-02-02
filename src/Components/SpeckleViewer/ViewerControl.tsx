@@ -8,13 +8,16 @@ import { Stores, stores, useStores } from '../../stores';
 //making a react component with mobx that can interface with e.g. selections
 
 const loadEntities = async (viewer: Viewer, entities: Entities) => {
+	//TODO Use API to load object and parse the object into the three.js converter / viewer
 	const { app, ui } = stores as Stores;
-	//TODO: Use API to load object and parse the object into the three.js converter / viewer
+
+	// TODO this should be set by interface and handled properly, lol
+	app.setServerUrl(`https://app.speckle.systems`);
+	app.setProject('cc54523741');
+	app.setModel('005e59a231');
+	app.setVersion('0749aa716b');
 
 	await viewer.loadObject(await app.getObjectUrl());
-	// for await (const entity of entities.list) { //     ;//${entity.id}`);
-	//
-	// }
 
 	// console.log(viewer.allObjects.filter(o => !!o.userData?.id));
 

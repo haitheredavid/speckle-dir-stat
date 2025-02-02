@@ -11,18 +11,32 @@ export const REFRESH_TOKEN = `${APP_NAME}.RefreshToken`;
 export const CHALLENGE = `${APP_NAME}.Challenge`;
 
 export const buildUrl = async (
-	projectId: string,
-	modelId: string,
+	project: string,
+	model: string,
+	version: string,
 	server: string,
 	token?: string
 ): Promise<string> => {
+	console.log(`
+		Starting to build url for referenced object:
+		server: ${server}		
+		project: ${project}
+		model: ${model}
+		version: ${version}
+
+		Full path = ${server}/projects/${project}/models/${model}@${version}
+		`);
+
 	const api = new Speckle({ server, token });
 
-	const data = await api.Project(projectId).Model(modelId).get;
+	const res = await api
+		.Project(project)
+		.Model(model)
+		.Version(version)
+		.getFullUrl();
 
-	// The way we use to call to the speckle api has changed so we will need to fix that
-	// return 'https://app.speckle.systems/projects/cc54523741/models/a7759c380aaff408594f279424b1292b';
-	return `${server}/projects/${projectId}/models/${data.referencedObject}`;
+	console.log(`Result of referenced object=${res}`);
+	return res;
 };
 
 export const send = async (
