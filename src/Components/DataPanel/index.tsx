@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import {observer} from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Panel } from 'primereact/panel';
 
 import { useStores } from '../../stores';
@@ -22,8 +22,9 @@ export default observer(function DataPanel() {
                 <div ref={container1}>
                     <ManualScatter width={size1.width} height={size1.height}/>
                 </div>
+
                 <div ref={container2}>
-                    <SpaceTreemap width={size2.width} height={size2.height}
+                    <SpaceTreemap width={size2.width * .9} height={size2.height * .9}
                                   treeTotals={entities.activeTreeMap} />
                 </div>
             </div>

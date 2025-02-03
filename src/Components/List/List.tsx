@@ -69,14 +69,14 @@ export const ListItem = observer(({ item }: ListItemProps) => {
 					<div className={'value'}>{formatNum(item.volume)}</div>
 				</div>
 			</div>
-			<div
+			<Button
 				className={'tag'}
 				onClick={() => {
 					ui.setZoomToId(item.id);
 				}}
 			>
 				{objectTypeDisplay}
-			</div>
+			</Button>
 		</div>
 	);
 });
@@ -89,21 +89,23 @@ export const List = observer(() => {
 			{entities.selectedDescending.map((e) => (
 				<ListItem key={e.id} item={e} />
 			))}
-			<Button
-				onClick={() => {
-					ui.setFilterMode(!ui.filterMode);
-				}}
-			>
-				{ui.filterMode ? 'Clear Filter' : 'Filter'}
-			</Button>
-			<Button
-				onClick={() => {
-					app.sendSelected(entities.selected);
-				}}
-				disabled={entities.selected.length === 0}
-			>
-				{'Send'}
-			</Button>
-		</div>
+            <div className="List__buttons">
+                <Button
+                    onClick={() => {
+                        ui.setFilterMode(!ui.filterMode);
+                    }}
+                >
+                    {ui.filterMode ? 'Clear Filter' : 'Filter'}
+                </Button>
+                <Button
+                    onClick={() => {
+                        app.sendSelected(entities.selected);
+                    }}
+                    disabled={entities.selected.length === 0}
+                >
+                    {'Send'}
+                </Button>
+            </div>
+        </div>
 	);
 });

@@ -8,8 +8,8 @@
     z-index: 10000;
     display: grid;
     gap: layout.$padding--smallest;
-    grid-template-rows: 2fr minmax(500px, 1fr);
-    grid-template-columns: 2fr 30rem 1.5fr;
+    grid-template-rows: 2fr 400px;
+    grid-template-columns: 2fr 30rem minmax(25%, 600px);
 
     width: 100%;
     height: 100%;

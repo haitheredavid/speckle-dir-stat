@@ -1,7 +1,16 @@
+@use '../../tokens/layout';
+
 .List {
   z-index: 5;
   padding: 0.5em;
   //border: 1px solid red;
+
+  &__buttons {
+    display: flex;
+    gap: layout.$padding--small;
+    margin-top: layout.$padding--large;
+  }
+
   .ListItem {
     position: relative;
     //cursor: pointer;
