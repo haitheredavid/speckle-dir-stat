@@ -1,21 +1,53 @@
 import { observer } from 'mobx-react';
 import { useEffect, useRef } from 'react';
-import { Viewer } from './viewer';
 import { reaction } from 'mobx';
 import Entities, { Entity } from '../../stores/Entities';
 import { Stores, stores, useStores } from '../../stores';
+import {
+	CameraController,
+	DefaultViewerParams,
+	SelectionExtension,
+	SpeckleLoader,
+	UrlHelper,
+	Viewer,
+	ViewerParams,
+} from '@speckle/viewer';
+import AppStore from '~/stores/AppStore';
 
 //making a react component with mobx that can interface with e.g. selections
 
-const loadEntities = async (viewer: Viewer, entities: Entities) => {
-	//TODO Use API to load object and parse the object into the three.js converter / viewer
+const loadEnts = async (viewer: Viewer, entities: Entities) => {
 	const { app, ui } = stores as Stores;
 
+	setDefaultSpeckleValues(app);
+
+	// example for working with url stuff
+	// https://codesandbox.io/p/sandbox/hide-show-models-pmrd52?file=%2Fsrc%2Findex.ts%3A60%2C40
+
+	const urls = await UrlHelper.getResourceUrls(
+		await app.getObjectUrl(),
+		app.token
+	);
+
+	for (const url of urls) {
+		console.log(`url=${url}`);
+		const loader = new SpeckleLoader(viewer.getWorldTree(), url, '');
+		await viewer.loadObject(loader, true);
+	}
+};
+
+const setDefaultSpeckleValues = (app: AppStore) => {
 	// TODO this should be set by interface and handled properly, lol
 	app.setServerUrl(`https://app.speckle.systems`);
 	app.setProject('cc54523741');
 	app.setModel('005e59a231');
 	app.setVersion('0749aa716b');
+};
+
+const loadEntities = async (viewer: Viewer, entities: Entities) => {
+	//TODO Use API to load object and parse the object into the three.js converter / viewer
+	const { app, ui } = stores as Stores;
+	setDefaultSpeckleValues(app);
 
 	await viewer.loadObject(await app.getObjectUrl());
 
@@ -131,7 +163,7 @@ export const ViewerControl = observer(() => {
 	const { app, entities } = useStores() as Stores;
 
 	const viewer = useRef<Viewer | null>(null);
-	let divRef: HTMLDivElement | null = null;
+	let divRef: HTMLElement | null = null;
 	console.log('ViewerControl render');
 
 	// forcing the app to be upclean to get the effect to run
@@ -143,12 +175,18 @@ export const ViewerControl = observer(() => {
 			if (runOnce) return; //SHOULD NOT BE NEEDED when passing empty array as deps, but something is up...
 			runOnce = true;
 			console.log('useEffect RUNNING');
-			viewer.current = new Viewer({
-				container: divRef,
-				showStats: false,
-			});
 
-			loadEntities(viewer.current, entities);
+			const params = DefaultViewerParams;
+			params.showStats = true;
+			params.verbose = true;
+
+			viewer.current = new Viewer(divRef, params);
+
+			const init = async () => {};
+			viewer.current.createExtension(CameraController);
+			viewer.current.createExtension(SelectionExtension);
+
+			loadEnts(viewer.current, entities);
 		}
 	}, [entities, app.clean, divRef]);
 
