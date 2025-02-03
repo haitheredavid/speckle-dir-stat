@@ -6,35 +6,17 @@ import { Stores, stores, useStores } from '../../stores';
 import {
 	CameraController,
 	DefaultViewerParams,
+	PropertyInfo,
 	SelectionExtension,
 	SpeckleLoader,
+	TreeNode,
 	UrlHelper,
 	Viewer,
-	ViewerParams,
+	ViewerEvent,
 } from '@speckle/viewer';
 import AppStore from '~/stores/AppStore';
 
 //making a react component with mobx that can interface with e.g. selections
-
-const loadEnts = async (viewer: Viewer, entities: Entities) => {
-	const { app, ui } = stores as Stores;
-
-	setDefaultSpeckleValues(app);
-
-	// example for working with url stuff
-	// https://codesandbox.io/p/sandbox/hide-show-models-pmrd52?file=%2Fsrc%2Findex.ts%3A60%2C40
-
-	const urls = await UrlHelper.getResourceUrls(
-		await app.getObjectUrl(),
-		app.token
-	);
-
-	for (const url of urls) {
-		console.log(`url=${url}`);
-		const loader = new SpeckleLoader(viewer.getWorldTree(), url, '');
-		await viewer.loadObject(loader, true);
-	}
-};
 
 const setDefaultSpeckleValues = (app: AppStore) => {
 	// TODO this should be set by interface and handled properly, lol
@@ -44,15 +26,64 @@ const setDefaultSpeckleValues = (app: AppStore) => {
 	app.setVersion('0749aa716b');
 };
 
+// example for working with url stuff
+// https://codesandbox.io/p/sandbox/hide-show-models-pmrd52?file=%2Fsrc%2Findex.ts%3A60%2C40
 const loadEntities = async (viewer: Viewer, entities: Entities) => {
-	//TODO Use API to load object and parse the object into the three.js converter / viewer
 	const { app, ui } = stores as Stores;
 	setDefaultSpeckleValues(app);
 
-	await viewer.loadObject(await app.getObjectUrl());
+	// this is the real url we load from the app... but for now we're using a url that will pull down multiple objects manually
+	const objectUrl = await app.getObjectUrl();
+	const allSubModels = `https://app.speckle.systems/projects/cc54523741/models/01845db95a,34dbf58819,49fd668697,92443a2b36,c8cb647b23`;
+	const urls = await UrlHelper.getResourceUrls(allSubModels, app.token);
+
+	let filteredProps: PropertyInfo[] = [];
+
+	// triggers everytime a single model is loaded, not the complete scene
+	viewer.on(ViewerEvent.LoadComplete, async (id: string) => {
+		// simple way of grabbing the props we might need
+		const props = await viewer.getObjectProperties(id);
+		const filtered = props.filter((value) => {
+			switch (value.key) {
+				case 'id':
+					return true;
+				case 'area':
+					return true;
+				case 'volume':
+					return true;
+				case 'speckle_type':
+					return true;
+				default:
+					false;
+			}
+		});
+		filteredProps.push(...filtered);
+	});
+
+	for (const url of urls) {
+		console.log(`url=${url}`);
+		const loader = new SpeckleLoader(viewer.getWorldTree(), url, '');
+		await viewer.loadObject(loader, true);
+	}
+
+	console.log('finished props', filteredProps);
+
+	// TODO flush out how to best filter through the mesh data form
+	/* 
+		this should replace the previous filtering function since the allObjects is no longer valid 
+		the properties give us the basic speckle data we need.
+		the one item that is missing from these props is the bbox property which we use the volume for... 
+		but we might not need that since we get a volume prop straight from the object 
+	*/
+	for (const p of filteredProps.filter((i) => i.key === 'speckle_type')) {
+		for (const value of p.valueGroups.filter(
+			(type) => type.value === 'Objects.Geometry.Mesh'
+		)) {
+			console.log(value);
+		}
+	}
 
 	// console.log(viewer.allObjects.filter(o => !!o.userData?.id));
-
 	for (const o of viewer.allObjects.filter((o) => !!o.userData?.id)) {
 		// const entity = entities.list.find(e => e.id === o.userData.id);
 		o.userData._density = o.userData._size / o.userData.bbox?.volume;
@@ -186,7 +217,7 @@ export const ViewerControl = observer(() => {
 			viewer.current.createExtension(CameraController);
 			viewer.current.createExtension(SelectionExtension);
 
-			loadEnts(viewer.current, entities);
+			loadEntities(viewer.current, entities);
 		}
 	}, [entities, app.clean, divRef]);
 
