@@ -5,6 +5,7 @@ import {
 	exchangeAccessCode,
 	goToSpeckleAuthPage,
 	send,
+	getReferencedObject,
 	speckleLogOut,
 } from '../Components/SpeckleApi';
 import { Entity } from './Entities';
@@ -93,6 +94,15 @@ export default class AppStore extends Store {
 			this.versionId,
 			this.serverUrl,
 			this.token!
+		);
+	}
+
+	async getReferencedObject(): Promise<string> {
+		return await getReferencedObject(
+			this.projectId,
+			this.modelId,
+			this.versionId,
+			this.serverUrl
 		);
 	}
 

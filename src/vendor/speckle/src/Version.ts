@@ -44,9 +44,9 @@ export default class SpeckleVersion extends SpeckleNode<
 		return this.parent.project;
 	}
 
-	public async getFullUrl(): Promise<string> {
+	public async getUrl(): Promise<string> {
 		const data = await this.fetch();
-		return `${this.project.url}/models/${data.referencedObject}`;
+		return this.url;
 	}
 
 	protected async fetch() {

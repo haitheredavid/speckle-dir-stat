@@ -29,14 +29,34 @@ export const buildUrl = async (
 
 	const api = new Speckle({ server, token });
 
-	const res = await api
-		.Project(project)
-		.Model(model)
-		.Version(version)
-		.getFullUrl();
+	const res = await api.Project(project).Model(model).Version(version).getUrl();
 
-	console.log(`Result of referenced object=${res}`);
+	console.log(`Result=${res}`);
 	return res;
+};
+
+export const getReferencedObject = async (
+	project: string,
+	model: string,
+	version: string,
+	server: string,
+	token?: string
+): Promise<string> => {
+	console.log(`
+			Starting to build url for referenced object:
+			server: ${server}		
+			project: ${project}
+			model: ${model}
+			version: ${version}
+	
+			Full path = ${server}/projects/${project}/models/${model}@${version}
+			`);
+
+	const api = new Speckle({ server, token });
+
+	const res = await api.Project(project).Model(model).Version(version).get;
+	console.log(`Result of referenced object=${res.referencedObject}`);
+	return res.referencedObject;
 };
 
 export const send = async (
