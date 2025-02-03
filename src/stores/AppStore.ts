@@ -63,40 +63,37 @@ export default class AppStore extends Store {
 	}
 
 	@observable
-	streamId: string = '';
+	projectId: string = '';
 
 	@action
-	setStreamId(streamId: string) {
-		this.streamId = streamId;
+	setProject(id: string) {
+		this.projectId = id;
 	}
 
 	@observable
-	commitId: string = '';
+	modelId: string = '';
 
 	@action
-	setCommitId(commitId: string) {
-		this.commitId = commitId;
+	setModel(id: string) {
+		this.modelId = id;
+	}
+
+	@observable
+	versionId: string = '';
+
+	@action
+	setVersion(id: string) {
+		this.versionId = id;
 	}
 
 	async getObjectUrl(): Promise<string> {
-		if (this.url !== '') {
-			const url = new URL(this.url);
-
-			const splitUrl = url.pathname.split('/');
-
-			this.setStreamId(splitUrl[2]);
-			this.setCommitId(splitUrl[4]);
-			this.setServerUrl(url.origin);
-
-			return await buildUrl(
-				this.streamId,
-				this.commitId,
-				this.serverUrl,
-				this.token
-			);
-		}
-
-		return '';
+		return await buildUrl(
+			this.projectId,
+			this.modelId,
+			this.versionId,
+			this.serverUrl,
+			this.token!
+		);
 	}
 
 	@action
@@ -104,7 +101,7 @@ export default class AppStore extends Store {
 		const token: string = this.token === undefined ? '' : this.token;
 
 		if (this.token !== '' || entities?.length === 0) {
-			return send(entities, this.streamId, this.serverUrl, token);
+			return send(entities, this.projectId, this.serverUrl, token);
 		}
 	}
 }
