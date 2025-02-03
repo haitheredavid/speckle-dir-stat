@@ -3,16 +3,18 @@
  */
 
 import SpeckleApp from './Speckle';
-import SpeckleModel from './Model';
+import SpeckleVersion from './Version';
 import SpeckleProject from './Project';
 import SpeckleObject from './Object';
+import SpeckleModel from './Model';
 
 type Nodes =
 	| SpeckleNode<Nodes>
 	| SpeckleApp
 	| SpeckleProject
+	| SpeckleModel
 	| SpeckleObject
-	| SpeckleModel;
+	| SpeckleVersion;
 
 export default abstract class SpeckleNode<
 	Parent extends Nodes,

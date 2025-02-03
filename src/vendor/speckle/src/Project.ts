@@ -3,10 +3,10 @@
  */
 
 import API from './api';
+import SpeckleModel from './Model';
 import SpeckleNode from './Node';
 import SpeckleObject from './Object';
 import SpeckleApp from './Speckle';
-import SpeckleModel from './Model';
 import { SpeckleBaseObject } from './types';
 
 export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
@@ -25,24 +25,23 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 	public Model(id: string): SpeckleModel {
 		return new SpeckleModel(id, this);
 	}
-
-	public async model(
+	public async createVersion(
 		obj: SpeckleObject,
 		message: string = 'data from @zfs/speckle',
-		modelName: string = 'main'
+		model: SpeckleModel
 	) {
 		return API.query(
 			this.parent.server,
 			this.parent.token,
-			`mutation modelCreate($model: modelCreateInput!){ 
-                modelCreate(model: $model)
+			`mutation VersionCreate($Version: VersionCreateInput!){ 
+                VersionCreate(Version: $Version)
             }`,
 			{
-				model: {
+				Version: {
 					projectId: this.id,
 					objectId: obj.id,
 					sourceApplication: `@zfs/speckle`,
-					modelName,
+					model,
 					message,
 				},
 			}
@@ -52,28 +51,28 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
 	public async writeObject(
 		obj: SpeckleBaseObject,
 		message?: string,
-		modelName?: string
+		VersionName?: string
 	): Promise<SpeckleObject> {
 		const newObject = this.Object(obj.id);
 
-		await this.model(await newObject.write(obj), message, modelName);
+		//	await this.Version(await newObject.write(obj), message, VersionName);
 
 		return newObject;
 	}
 
-	public get models(): Promise<object> {
+	public get Versions(): Promise<object> {
 		return API.query(
 			this.app.server,
 			this.app.token,
 			`query Project($id: String!) {
-                project(id: $id) {
-                    models {
+                projects(id: $id) {
+                    Versions {
                         totalCount
                         items {
                             id
                             name
                             description
-                            models(limit: 4) {
+                            Versions(limit: 4) {
                                 totalCount
                                 items {
                                     id
@@ -83,7 +82,7 @@ export default class SpeckleProject extends SpeckleNode<SpeckleApp> {
                                     createdAt
                                     message
                                     referencedObject
-                                    modelName
+                                    VersionName
                                     sourceApplication
                                 }
                             }

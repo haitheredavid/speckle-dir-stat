@@ -1,19 +1,14 @@
-/**
- * Model
- */
-
 import API from './api';
 import SpeckleNode from './Node';
 import SpeckleProjct from './Project';
+import SpeckleVersion from './Version';
 
 export type ModelData = {
 	id: string;
-	message: string;
-	referencedObject: string;
-	authorId: string;
-	createdAt: string;
 	name: string;
-	sourceApplication: string;
+	displayName: string;
+	description: string;
+	author: string;
 };
 
 export default class SpeckleModel extends SpeckleNode<
@@ -21,26 +16,28 @@ export default class SpeckleModel extends SpeckleNode<
 	ModelData
 > {
 	public get url(): string {
-		return `${this.project.url}/projects/${this.id}`;
+		return `${this.project.url}/models/${this.id}`;
 	}
 
 	public get project(): SpeckleProjct {
 		return this.parent;
 	}
+	public Version(id: string): SpeckleVersion {
+		return new SpeckleVersion(id, this);
+	}
 
-	protected async fetch() {
+	protected async fetch(): Promise<ModelData> {
 		const res = await API.query(
 			this.project.app.server,
 			this.project.app.token,
 			`query ProjctModelQuery($projectId: String!, $id: String!) {
                 project(id: $projectId) {
                     model(id: $id) {
-                        message
-                        referencedObject
-                        authorId
-                        createdAt
-                        branchName
-                        sourceApplication
+                        name
+                        displayName
+                        description
+                        author
+
                     }
                 }
             }`,
@@ -49,7 +46,7 @@ export default class SpeckleModel extends SpeckleNode<
 				projectId: this.project.id,
 			}
 		);
-
-		return { ...res.data.project.project, id: this.id };
+		console.log(res);
+		return { ...res.data.project.model, id: this.id };
 	}
 }

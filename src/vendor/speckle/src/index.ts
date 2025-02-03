@@ -4,8 +4,9 @@
 
 import Speckle from './Speckle';
 import SpeckleProject from './Project';
+import SpeckleModel from './Model';
 import SpeckleObject from './Object';
-import SpeckleModel, { ModelData } from './Model';
+import SpeckleVersion, { VersionData } from './Version';
 import SpeckleUser, { UserData } from './User';
 import SpeckleNode from './Node';
 import API from './api';
@@ -14,6 +15,7 @@ import { SpeckleConfig, SpeckleBaseObject, SpeckleAppConfig } from './types';
 
 export {
 	Speckle,
+	SpeckleVersion,
 	SpeckleModel,
 	SpeckleProject,
 	SpeckleObject,
@@ -23,7 +25,7 @@ export {
 };
 
 export type {
-	ModelData,
+	VersionData,
 	UserData,
 	SpeckleConfig,
 	SpeckleBaseObject,
