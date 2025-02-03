@@ -7,9 +7,13 @@ import {
 	CameraController,
 	DefaultViewerParams,
 	FilteringExtension,
+	GeometryType,
+	NodeRenderView,
 	PropertyInfo,
 	SelectionExtension,
 	SpeckleLoader,
+	StringPropertyInfo,
+	TreeNode,
 	UrlHelper,
 	Viewer,
 	ViewerEvent,
@@ -35,7 +39,7 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 	setDefaultSpeckleValues(app);
 
 	// this is the real url we load from the app... but for now we're using a url that will pull down multiple objects manually
-	const objectUrl = await app.getObjectUrl();
+	/// const objectUrl = await app.getObjectUrl();
 	const allSubModels = `https://app.speckle.systems/projects/cc54523741/models/01845db95a,34dbf58819,49fd668697,92443a2b36,c8cb647b23`;
 	const urls = await UrlHelper.getResourceUrls(allSubModels, app.token);
 
@@ -44,6 +48,7 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 	// triggers everytime a single model is loaded, not the complete scene
 	viewer.on(ViewerEvent.LoadComplete, async (id: string) => {
 		// simple way of grabbing the props we might need
+		console.log('grabbing props from ', id);
 		const props = await viewer.getObjectProperties(id);
 		const filtered = props.filter((value) => {
 			switch (value.key) {
@@ -65,9 +70,23 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 	for (const url of urls) {
 		const loader = new SpeckleLoader(viewer.getWorldTree(), url, app.token);
 		await viewer.loadObject(loader, true);
-		console.log(`Load compelte for ${url}`);
+		console.log(`Load complete for ${url}`);
 	}
-	const worldTree = viewer.getWorldTree();
+
+	const vertices = viewer
+		.getWorldTree()
+		.getRenderTree()
+		.getRenderViewNodesForNode(viewer.getWorldTree().root);
+	console.log(vertices);
+
+	const worldTree = viewer.getWorldTree().findAll(
+		// @ts-ignore
+		(node: TreeNode) =>
+			node.model.renderView &&
+			node.model.renderView.geometryType === GeometryType.MESH
+	);
+
+	console.log(worldTree);
 
 	// search each valid id object
 	//@ts-ignore
@@ -80,7 +99,7 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 				// filter out top level ids to the model
 				if (!id.includes(`/`)) {
 					// probably a better way to do this...
-					const obj = worldTree.findId(id);
+					const obj = viewer.getWorldTree().findId(id);
 					if (!obj) continue;
 
 					console.log(obj);
@@ -144,6 +163,10 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 			selfInflicted = true;
 			if (filterMode) {
 				const ext = viewer.getExtension(FilteringExtension);
+				ext.resetFilters();
+				ext.setUserObjectColors([
+					{ objectIds: entities.selectedIds, color: '#c8255c' },
+				]);
 				//TODO replace this colorzing effect
 
 				/* viewer.applyFilter({
@@ -170,11 +193,12 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 	);
 
 	viewer.on(ViewerEvent.ObjectClicked, (e: any) => {
-		if (selfInflicted) return;
+		if (selfInflicted || !e) return;
 		// console.log('select', e);
 
 		dontReact = true;
-		if (e.length > 0) {
+
+		if (e.length && e.length > 0) {
 			const ids = e.map((v: { id: any }) => v.id);
 			// console.log('selected ID', ids);
 
