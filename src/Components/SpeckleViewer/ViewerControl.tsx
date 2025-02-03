@@ -6,10 +6,10 @@ import { Stores, stores, useStores } from '../../stores';
 import {
 	CameraController,
 	DefaultViewerParams,
+	FilteringExtension,
 	PropertyInfo,
 	SelectionExtension,
 	SpeckleLoader,
-	TreeNode,
 	UrlHelper,
 	Viewer,
 	ViewerEvent,
@@ -24,6 +24,8 @@ const setDefaultSpeckleValues = (app: AppStore) => {
 	app.setProject('cc54523741');
 	app.setModel('005e59a231');
 	app.setVersion('0749aa716b');
+	//TODO make sure this doesnt go live
+	app.setToken('');
 };
 
 // example for working with url stuff
@@ -54,50 +56,55 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 				case 'speckle_type':
 					return true;
 				default:
-					false;
+					return false;
 			}
 		});
 		filteredProps.push(...filtered);
 	});
 
 	for (const url of urls) {
-		console.log(`url=${url}`);
-		const loader = new SpeckleLoader(viewer.getWorldTree(), url, '');
+		const loader = new SpeckleLoader(viewer.getWorldTree(), url, app.token);
 		await viewer.loadObject(loader, true);
+		console.log(`Load compelte for ${url}`);
 	}
+	const worldTree = viewer.getWorldTree();
 
-	console.log('finished props', filteredProps);
+	// search each valid id object
+	//@ts-ignore
+	for (const p of filteredProps.filter((i) => i.key === 'id')) {
+		// step in to the collection
+		// @ts-ignore
+		for (const prop of p.valueGroups) {
+			// finally at the id level
+			for (const id of prop.ids) {
+				// filter out top level ids to the model
+				if (!id.includes(`/`)) {
+					// probably a better way to do this...
+					const obj = worldTree.findId(id);
+					if (!obj) continue;
 
-	// TODO flush out how to best filter through the mesh data form
-	/* 
-		this should replace the previous filtering function since the allObjects is no longer valid 
-		the properties give us the basic speckle data we need.
-		the one item that is missing from these props is the bbox property which we use the volume for... 
-		but we might not need that since we get a volume prop straight from the object 
-	*/
-	for (const p of filteredProps.filter((i) => i.key === 'speckle_type')) {
-		for (const value of p.valueGroups.filter(
-			(type) => type.value === 'Objects.Geometry.Mesh'
-		)) {
-			console.log(value);
+					console.log(obj);
+					//@ts-ignore
+					const raw = obj[0].model.raw;
+					if (raw.speckle_type !== 'Objects.Geometry.Mesh') continue;
+
+					const bbox = raw.bbox;
+					raw._density = raw.volume / bbox?.volume;
+
+					const entity = new Entity(id);
+
+					entity.setSize(raw.volume);
+					entity.setArea(raw.area);
+					entity.setVolume(raw.volume);
+					entity.setBoundingVolume(bbox?.volume);
+					entity.setObjectType(raw.speckle_type);
+					entity.setObject(raw);
+
+					entities.addEntity(entity);
+					console.log(entity);
+				}
+			}
 		}
-	}
-
-	// console.log(viewer.allObjects.filter(o => !!o.userData?.id));
-	for (const o of viewer.allObjects.filter((o) => !!o.userData?.id)) {
-		// const entity = entities.list.find(e => e.id === o.userData.id);
-		o.userData._density = o.userData._size / o.userData.bbox?.volume;
-
-		const entity = new Entity(o.userData.id);
-
-		entity.setSize(o.userData._size);
-		entity.setArea(o.userData.area);
-		entity.setVolume(o.userData.volume);
-		entity.setBoundingVolume(o.userData.bbox?.volume);
-		entity.setObjectType(o.userData.speckle_type);
-		entity.setObject(o);
-
-		entities.addEntity(entity);
 	}
 
 	// autorun(() => {
@@ -112,9 +119,10 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 		(selectedIds) => {
 			if (dontReact) return;
 			selfInflicted = true;
-			viewer.interactions.selectObjects(
-				(v) => selectedIds.indexOf(v.userData.id) >= 0
-			);
+
+			const ext = viewer.getExtension(FilteringExtension);
+			ext.resetFilters();
+			ext.isolateObjects(selectedIds, '', true, true);
 			selfInflicted = false;
 		}
 	);
@@ -123,9 +131,8 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 		(zoomToId) => {
 			if (dontReact) return;
 			if (!zoomToId) return;
-			viewer.interactions.zoomToMatchingObject(
-				(v) => zoomToId === v.userData.id
-			);
+			// TODO need to look into extensions for this setting
+			//viewer.interactions.zoomToMatchingObject((v) => zoomToId === v.userData.id);
 			ui.setZoomToId(''); //clear for the next click (so we can click the same object again if needed)
 		}
 	);
@@ -136,7 +143,10 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 			if (dontReact) return;
 			selfInflicted = true;
 			if (filterMode) {
-				viewer.applyFilter({
+				const ext = viewer.getExtension(FilteringExtension);
+				//TODO replace this colorzing effect
+
+				/* viewer.applyFilter({
 					filterBy: {
 						id: entities.selectedIds,
 					},
@@ -148,30 +158,24 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 						gradientColors: ['#c8255c', '#1f0454'],
 						default: '#000000',
 					},
-					// colorBy: {
-					//     type: 'category', property: 'speckle_type', values: {
-					//         'Objects.Geometry.Brep': '#a14c06',
-					//         'Objects.Geometry.Mesh': '#ee934c'
-					//     }
-					// },
 					ghostOthers: true,
 				});
 			} else {
 				viewer.applyFilter({
 					ghostOthers: false,
-				});
+				});*/
 			}
 			selfInflicted = false;
 		}
 	);
 
-	viewer.on('select', (e: any) => {
+	viewer.on(ViewerEvent.ObjectClicked, (e: any) => {
 		if (selfInflicted) return;
 		// console.log('select', e);
 
 		dontReact = true;
-		if (e.userData.length > 0) {
-			const ids = e.userData.map((v: { id: any }) => v.id);
+		if (e.length > 0) {
+			const ids = e.map((v: { id: any }) => v.id);
 			// console.log('selected ID', ids);
 
 			for (const entity of entities.list) {
@@ -186,7 +190,6 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 		dontReact = false;
 	});
 };
-
 let runOnce = false;
 
 export const ViewerControl = observer(() => {
@@ -208,14 +211,15 @@ export const ViewerControl = observer(() => {
 			console.log('useEffect RUNNING');
 
 			const params = DefaultViewerParams;
-			params.showStats = true;
-			params.verbose = true;
+			params.showStats = false;
+			params.verbose = false;
 
 			viewer.current = new Viewer(divRef, params);
 
 			const init = async () => {};
 			viewer.current.createExtension(CameraController);
 			viewer.current.createExtension(SelectionExtension);
+			viewer.current.createExtension(FilteringExtension);
 
 			loadEntities(viewer.current, entities);
 		}
