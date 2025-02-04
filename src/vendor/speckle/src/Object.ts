@@ -17,12 +17,10 @@ export default class SpeckleObject extends SpeckleNode<SpeckleProject> {
 		if (id === undefined) id = md5(new Date().toString());
 
 		super(id, project);
-
-		console.log('project id:', project.id);
 		this.loader = new ObjectLoader({
 			serverUrl: project.app.server,
 			token: project.app.token,
-			streamId: project.id,
+			projectId: project.id,
 			objectId: id,
 		});
 	}
