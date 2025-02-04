@@ -144,14 +144,14 @@ export default class Entities extends Store {
 	@computed
 	get colorRamp() {
 		const { ui } = stores as Stores;
-
 		return chroma
 			.scale(['#414487ff', '#2a788eff', '#22a884ff', '#7ad151ff'])
-			.domain([ui.densityRampMax, 0])
+			.domain([0, ui.densityRampMax])
 			.mode('lch');
 	}
 
 	getColor(value: number) {
+		console.log(value);
 		return this.colorRamp(value).hex();
 	}
 
@@ -160,7 +160,7 @@ export default class Entities extends Store {
 		const dots: EntityDot[] = [];
 
 		this.list.forEach((item, i) => {
-			if (!item.size || !item.boundingVolume) return;
+			if (!item || !item.size || !item.boundingVolume) return;
 
 			dots.push({
 				id: item.id,
@@ -169,7 +169,7 @@ export default class Entities extends Store {
 				value: item.density,
 				selected: item.selected,
 				category: item.objectType,
-				color: this.getColor(item.density),
+				color: this.getColor(item.density === undefined ? item.density : 1),
 			});
 		});
 

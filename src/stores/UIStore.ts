@@ -93,7 +93,7 @@ export default class UIStore extends Store {
 	}
 
 	@observable
-	densityRampMax: number = 10000;
+	densityRampMax: number = 1;
 
 	@action
 	setDensityMax(value: number) {
@@ -109,10 +109,18 @@ export default class UIStore extends Store {
 	}
 
 	@observable
-	maxVolume: number = 100;
+	maxVolume: number = 1;
 
 	@action
 	setVolumeMax(value: number) {
-		this.densityRampMax = value;
+		this.maxVolume = value;
+	}
+
+	@observable
+	maxByteSize: number = 8;
+
+	@action
+	setMaxByteSize(value: number) {
+		this.maxByteSize = value;
 	}
 }

@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { useEffect, useRef } from 'react';
-import { reaction, set } from 'mobx';
+import { reaction } from 'mobx';
 import Entities, { Entity } from '../../stores/Entities';
 import { Stores, stores, useStores } from '../../stores';
 import {
@@ -8,7 +8,6 @@ import {
 	DefaultViewerParams,
 	FilteringExtension,
 	GeometryType,
-	PropertyInfo,
 	SelectionExtension,
 	SpeckleLoader,
 	TreeNode,
@@ -38,98 +37,68 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 
 	// this is the real url we load from the app... but for now we're using a url that will pull down multiple objects manually
 	/// const objectUrl = await app.getObjectUrl();
-	const allSubModels = `https://app.speckle.systems/projects/cc54523741/models/01845db95a,34dbf58819,49fd668697,92443a2b36,c8cb647b23`;
+	const topo = 'c8cb647b23';
+	const parks = '92443a2b36';
+	const buildings = '34dbf58819';
+	const allSubModels = `https://app.speckle.systems/projects/cc54523741/models/${buildings}`;
 	const urls = await UrlHelper.getResourceUrls(allSubModels, app.token);
 
-	let filteredProps: PropertyInfo[] = [];
-
-	// triggers everytime a single model is loaded, not the complete scene
-	viewer.on(ViewerEvent.LoadComplete, async (id: string) => {
-		// simple way of grabbing the props we might need
-		console.log('grabbing props from ', id);
-		const props = await viewer.getObjectProperties(id);
-		const filtered = props.filter((value) => {
-			switch (value.key) {
-				case 'id':
-					return true;
-				case 'area':
-					return true;
-				case 'volume':
-					return true;
-				case 'speckle_type':
-					return true;
-				default:
-					return false;
-			}
-		});
-		filteredProps.push(...filtered);
-	});
-
 	for (const url of urls) {
+		console.log('Loading', url);
 		const loader = new SpeckleLoader(viewer.getWorldTree(), url, app.token);
 		await viewer.loadObject(loader, true);
-		console.log(`Load complete for ${url}`);
+		console.log(`Load complete!`);
 	}
 
-	const vertices = viewer
+	const nodes = viewer
 		.getWorldTree()
-		.getRenderTree()
-		.getRenderViewNodesForNode(viewer.getWorldTree().root);
+		.findAll(
+			(node: TreeNode) =>
+				node.model.renderView &&
+				node.model.renderView.geometryType === GeometryType.MESH
+		);
 
-	const worldTree = viewer.getWorldTree().findAll(
-		// @ts-ignore
-		(node: TreeNode) =>
-			node.model.renderView &&
-			node.model.renderView.geometryType === GeometryType.MESH
-	);
+	const renderTree = viewer.getWorldTree().getRenderTree();
 
 	let maxDensity = 0;
 	let maxVolume = 0;
 	let maxByteSize = 0;
 
-	//@ts-ignore
-	for (const p of filteredProps.filter((i) => i.key === 'id')) {
-		// step in to the collection
-		// @ts-ignore
-		for (const prop of p.valueGroups) {
-			// finally at the id level
-			for (const id of prop.ids) {
-				// filter out top level ids to the model
-				if (!id.includes(`/`)) {
-					// probably a better way to do this...
-					const obj = viewer.getWorldTree().findId(id);
-					if (!obj) continue;
+	for (const node of nodes) {
+		const model = node.model;
+		/* no model found */
+		if (!model) continue;
+		const rvs = renderTree.getRenderViewsForNode(node);
+		const rv = rvs[0];
+		/* multiply by 8 for number byte size */
+		const size = (rv.vertEnd - rv.vertStart) * 8;
+		const volume =
+			model.raw.bbox.volume !== 0 ? model.raw.bbox.volume : model.raw.bbox.area;
+		const density = size / volume;
 
-					// console.log(obj);
-					//@ts-ignore
-					const raw = obj[0].model.raw;
-					if (raw.speckle_type !== 'Objects.Geometry.Mesh') continue;
+		const entity = new Entity(model.id);
+		/* this makes me sad */
+		entity.setSize(size);
+		entity.setObject(model.raw);
+		entity.setArea(model.raw.bbox.area);
+		entity.setVolume(model.raw.volume);
+		entity.setBoundingVolume(model.raw.bbox.volume);
+		entity.setObjectType(model.raw.speckle_type);
+		entities.addEntity(entity);
 
-					const bbox = raw.bbox;
-					// raw._density = raw.volume / bbox?.volume;
-					raw._density = Math.random();
-
-					if (maxDensity < raw._density) maxDensity = raw._density;
-					if (maxVolume < raw.volume) maxVolume = raw.volume;
-
-					const entity = new Entity(id);
-
-					// TODO get byte size instead of density
-					entity.setSize(raw._density);
-					entity.setArea(raw.area);
-					entity.setVolume(raw.volume);
-					entity.setBoundingVolume(bbox?.volume);
-					entity.setObjectType(raw.speckle_type);
-					entity.setObject(raw);
-
-					entities.addEntity(entity);
-				}
-			}
-		}
+		if (maxByteSize < size) maxByteSize = size;
+		if (maxDensity < density) maxDensity = density;
+		if (maxVolume < volume) maxVolume = volume;
 	}
 
+	console.log(
+		`Setting max values: Volume ${maxVolume} Density ${maxDensity} Size ${maxByteSize}`
+	);
+	console.log(entities);
 	ui.setVolumeMax(maxVolume);
 	ui.setDensityMax(maxDensity);
+	ui.setMaxByteSize(maxByteSize);
+	console.log(ui);
 
 	let selfInflicted = false;
 	let dontReact = false;
