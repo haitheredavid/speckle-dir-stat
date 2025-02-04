@@ -86,9 +86,11 @@ export const List = observer(() => {
 
 	return (
 		<div className={'List'}>
-			{entities.selectedDescending.map((e) => (
-				<ListItem key={e.id} item={e} />
-			))}
+            <div className="List__items">
+                {entities.selectedDescending.map((e) => (
+                    <ListItem key={e.id} item={e} />
+                ))}
+            </div>
             <div className="List__buttons">
                 <Button
                     onClick={() => {

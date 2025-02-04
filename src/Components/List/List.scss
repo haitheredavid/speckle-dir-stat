@@ -5,7 +5,16 @@
   padding: 0.5em;
   //border: 1px solid red;
 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__items {
+      overflow-y: scroll;
+  }
+
   &__buttons {
+    flex: 0 0 auto;
     display: flex;
     gap: layout.$padding--small;
     margin-top: layout.$padding--large;
