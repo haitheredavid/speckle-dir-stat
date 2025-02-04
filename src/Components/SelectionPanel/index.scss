@@ -1,2 +1,10 @@
 .SelectionPanel {
+    overflow-y: hidden;
+
+    .p {
+        &-content,
+        &-toggleable-content {
+            overflow-y: hidden;
+        }
+    }
 }
