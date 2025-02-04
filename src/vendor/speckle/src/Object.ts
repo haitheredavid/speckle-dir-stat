@@ -20,7 +20,7 @@ export default class SpeckleObject extends SpeckleNode<SpeckleProject> {
 		this.loader = new ObjectLoader({
 			serverUrl: project.app.server,
 			token: project.app.token,
-			projectId: project.id,
+			streamId: project.id,
 			objectId: id,
 		});
 	}
