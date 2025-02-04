@@ -110,6 +110,7 @@ export default class Entities extends Store {
 
 	@action
 	selectByRule(predicate: (e: Entity) => boolean) {
+		console.log(`ENTITY-Selecting by rule`, predicate);
 		this.list.forEach((e, i) => {
 			e.setSelected(predicate(e));
 		});

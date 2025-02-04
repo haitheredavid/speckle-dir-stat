@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { useEffect, useRef } from 'react';
-import { reaction } from 'mobx';
+import { reaction, set } from 'mobx';
 import Entities, { Entity } from '../../stores/Entities';
 import { Stores, stores, useStores } from '../../stores';
 import {
@@ -8,11 +8,9 @@ import {
 	DefaultViewerParams,
 	FilteringExtension,
 	GeometryType,
-	NodeRenderView,
 	PropertyInfo,
 	SelectionExtension,
 	SpeckleLoader,
-	StringPropertyInfo,
 	TreeNode,
 	UrlHelper,
 	Viewer,
@@ -88,7 +86,6 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 	let maxDensity = 0;
 	let maxVolume = 0;
 	let maxByteSize = 0;
-	console.log('World=', viewer.World);
 
 	//@ts-ignore
 	for (const p of filteredProps.filter((i) => i.key === 'id')) {
@@ -142,9 +139,22 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 			if (dontReact) return;
 			selfInflicted = true;
 
+			console.log(`CTRL-Selected Ids(${selectedIds?.length})`);
+
+			const sel = viewer.getExtension(SelectionExtension);
+			sel.clearSelection();
+			sel.selectObjects(selectedIds, true);
+
 			const ext = viewer.getExtension(FilteringExtension);
 			ext.resetFilters();
-			ext.isolateObjects(selectedIds, '', true, true);
+			ext.setUserObjectColors(
+				entities.selected.map((value: Entity) => ({
+					objectIds: [value.id],
+					color: entities.getColor(value.density),
+				}))
+			);
+			ext.isolateObjects(selectedIds);
+
 			selfInflicted = false;
 		}
 	);
@@ -153,9 +163,11 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 		(zoomToId) => {
 			if (dontReact) return;
 			if (!zoomToId) return;
+
+			console.log(`CTRL-Zoom to Id ${zoomToId}`);
+
 			// TODO need to look into extensions for this setting
 			//viewer.interactions.zoomToMatchingObject((v) => zoomToId === v.userData.id);
-			ui.setZoomToId(''); //clear for the next click (so we can click the same object again if needed)
 		}
 	);
 	//
@@ -165,6 +177,8 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 			if (dontReact) return;
 			selfInflicted = true;
 			if (filterMode) {
+				console.log(`CTRL-Filter by selection ${filterMode}`);
+
 				const ext = viewer.getExtension(FilteringExtension);
 				ext.resetFilters();
 				ext.setUserObjectColors([
