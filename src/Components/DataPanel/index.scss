@@ -1,31 +1,21 @@
-.DataPanel.Panel {
+@use '../../tokens/layout';
+
+.DataPanel {
+    &__container {
+        display: flex;
+        gap: layout.$padding--large;
+
+        height: 90%;
+        width: 100%;
+
+        > div {
+            flex: 1 1 auto;
+            width: 50%;
+        }
+    }
+}
+
+.ManualScatter, .SpaceTreemap {
     width: 100%;
     height: 100%;
-    margin-top: auto;
-    margin-bottom: 0;
-}
-
-.ManualScatter {
-    display: inline-block;
-    width: 48%;
-}
-
-.ManualScatter {
-    display: inline-block;
-    width: 48%;
-}
-.SpaceTreemap {
-    display: inline-block;
-    width: 48%;
-    position: relative;
-    svg {
-        margin-top: 12px;
-    }
-    .title {
-        text-align: center;
-        position: absolute;
-        top:3px;
-        right:0;
-        left:0;
-    }
 }

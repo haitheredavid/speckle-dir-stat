@@ -10,7 +10,7 @@ import {
 import { Text } from '@visx/text';
 import { defaultStyles, Tooltip, withTooltip } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
-import { TreeNode } from '~/stores/interfaces';
+import { TreeNode } from '../../stores/interfaces';
 
 // export const color1 = '#f3e9d2';
 // const color2 = '#4281a4';
