@@ -51,7 +51,7 @@ export const ListItem = observer(({ item }: ListItemProps) => {
 					<div
 						className={'label'}
 						onClick={() => {
-							ui.setDensityRampMax(item.density);
+							ui.setDensityMax(item.density);
 						}}
 					>
 						Density

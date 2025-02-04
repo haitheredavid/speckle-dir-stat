@@ -77,7 +77,6 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 		.getWorldTree()
 		.getRenderTree()
 		.getRenderViewNodesForNode(viewer.getWorldTree().root);
-	console.log(vertices);
 
 	const worldTree = viewer.getWorldTree().findAll(
 		// @ts-ignore
@@ -86,9 +85,11 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 			node.model.renderView.geometryType === GeometryType.MESH
 	);
 
-	console.log(worldTree);
+	let maxDensity = 0;
+	let maxVolume = 0;
+	let maxByteSize = 0;
+	console.log('World=', viewer.World);
 
-	// search each valid id object
 	//@ts-ignore
 	for (const p of filteredProps.filter((i) => i.key === 'id')) {
 		// step in to the collection
@@ -102,17 +103,22 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 					const obj = viewer.getWorldTree().findId(id);
 					if (!obj) continue;
 
-					console.log(obj);
+					// console.log(obj);
 					//@ts-ignore
 					const raw = obj[0].model.raw;
 					if (raw.speckle_type !== 'Objects.Geometry.Mesh') continue;
 
 					const bbox = raw.bbox;
-					raw._density = raw.volume / bbox?.volume;
+					// raw._density = raw.volume / bbox?.volume;
+					raw._density = Math.random();
+
+					if (maxDensity < raw._density) maxDensity = raw._density;
+					if (maxVolume < raw.volume) maxVolume = raw.volume;
 
 					const entity = new Entity(id);
 
-					entity.setSize(raw.volume);
+					// TODO get byte size instead of density
+					entity.setSize(raw._density);
 					entity.setArea(raw.area);
 					entity.setVolume(raw.volume);
 					entity.setBoundingVolume(bbox?.volume);
@@ -120,16 +126,13 @@ const loadEntities = async (viewer: Viewer, entities: Entities) => {
 					entity.setObject(raw);
 
 					entities.addEntity(entity);
-					console.log(entity);
 				}
 			}
 		}
 	}
 
-	// autorun(() => {
-	//     const selectedIds = entities.list.filter(e => e.selected).map(e => e.id);
-	//     viewer.interactions.selectObjects(v => selectedIds.indexOf(v.userData.id) >= 0);
-	// })
+	ui.setVolumeMax(maxVolume);
+	ui.setDensityMax(maxDensity);
 
 	let selfInflicted = false;
 	let dontReact = false;

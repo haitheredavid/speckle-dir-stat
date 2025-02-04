@@ -1,111 +1,118 @@
 import { Store } from './Store';
 import { action, computed, makeObservable, observable } from 'mobx';
 
-
 export class Rectangle {
-    @observable
-    left: number = 0;
-    @observable
-    top: number = 0;
-    @observable
-    right: number = 0;
-    @observable
-    bottom: number = 0;
+	@observable
+	left: number = 0;
+	@observable
+	top: number = 0;
+	@observable
+	right: number = 0;
+	@observable
+	bottom: number = 0;
 
-    constructor() {
-        makeObservable(this);
-    }
+	constructor() {
+		makeObservable(this);
+	}
 
-    @computed
-    get active() {
-        return this.right > this.left && this.top > this.bottom;
-    }
+	@computed
+	get active() {
+		return this.right > this.left && this.top > this.bottom;
+	}
 
-    @action
-    set(left: number, top: number, right: number, bottom: number) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-    }
+	@action
+	set(left: number, top: number, right: number, bottom: number) {
+		this.left = left;
+		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
+	}
 
-    contains(x: number, y: number) {
-        return x >= this.left && x <= this.right && y >= this.bottom && y <= this.top;
-    }
+	contains(x: number, y: number) {
+		return (
+			x >= this.left && x <= this.right && y >= this.bottom && y <= this.top
+		);
+	}
 
-    reset() {
-        this.left = 0;
-        this.top = 0;
-        this.right = 0;
-        this.bottom = 0;
-    }
+	reset() {
+		this.left = 0;
+		this.top = 0;
+		this.right = 0;
+		this.bottom = 0;
+	}
 }
 
 export default class UIStore extends Store {
+	constructor() {
+		super();
+		makeObservable(this);
+	}
 
-    constructor() {
-        super();
-        makeObservable(this);
-    }
+	@observable
+	dataPanelIsOpen: boolean = true;
 
-    @observable
-    dataPanelIsOpen: boolean = true;
+	@observable
+	scatterSelectionArea: Rectangle = new Rectangle();
 
-    @observable
-    scatterSelectionArea: Rectangle = new Rectangle();
+	@action
+	setDataPanelOpen(isOpen = true) {
+		this.dataPanelIsOpen = isOpen;
+	}
 
-    @action
-    setDataPanelOpen(isOpen = true) {
-        this.dataPanelIsOpen = isOpen;
-    }
+	@observable
+	loadModalIsOpen: boolean = true;
 
-    @observable
-    loadModalIsOpen: boolean = true;
+	@action
+	setLoadModalOpen(isOpen = true) {
+		this.loadModalIsOpen = isOpen;
+	}
 
-    @action
-    setLoadModalOpen(isOpen = true) {
-        this.loadModalIsOpen = isOpen;
-    }
+	@observable
+	selectionPanelIsOpen: boolean = true;
 
-    @observable
-    selectionPanelIsOpen: boolean = true;
+	@action
+	setSelectionPanelOpen(isOpen = true) {
+		this.selectionPanelIsOpen = isOpen;
+	}
 
-    @action
-    setSelectionPanelOpen(isOpen = true) {
-        this.selectionPanelIsOpen = isOpen;
-    }
+	@computed
+	get layout(): string {
+		if (!this.dataPanelIsOpen) {
+			return 'A';
+		}
 
-    @computed
-    get layout(): string {
-        if (!this.dataPanelIsOpen) {
-            return 'A';
-        }
+		return '';
+	}
 
-        return '';
-    }
+	@observable
+	filterMode: boolean = false;
 
-    @observable
-    filterMode: boolean = false;
+	@action
+	setFilterMode(filterMode = true) {
+		this.filterMode = filterMode;
+	}
 
-    @action
-    setFilterMode(filterMode = true) {
-        this.filterMode = filterMode;
-    }
+	@observable
+	densityRampMax: number = 10000;
 
-    @observable
-    densityRampMax: number = 10000;
+	@action
+	setDensityMax(value: number) {
+		this.densityRampMax = value;
+	}
 
-    @action
-    setDensityRampMax(value: number) {
-        this.densityRampMax = value;
-    }
+	@observable
+	zoomToId: string = '';
 
-    @observable
-    zoomToId: string = '';
+	@action
+	public setZoomToId(value: string) {
+		this.zoomToId = value;
+	}
 
-    @action
-    public setZoomToId(value: string) {
-        this.zoomToId = value;
-    }
+	@observable
+	maxVolume: number = 100;
 
+	@action
+	setVolumeMax(value: number) {
+		this.densityRampMax = value;
+	}
 }
